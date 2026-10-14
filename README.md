@@ -32,7 +32,7 @@
 
 실행할 때 GitHub Releases의 최신 버전을 확인하고, 새 버전이 있으면 화면 위에 알림이 뜹니다. **업데이트** 버튼을 누르면 설치파일을 내려받아 SHA-256 해시를 확인한 뒤 조용히 설치하고 프로그램을 다시 엽니다. 설정과 Google 연결은 유지됩니다. 환경 설정의 **업데이트 확인**으로 직접 확인할 수도 있습니다. 휴대용 EXE는 자동 설치 대신 다운로드 페이지를 열어 줍니다.
 
-새 버전 배포: `coolmemo_app/version.py`의 버전을 올리고 `packaginguild.ps1`로 빌드한 뒤, 태그 `vX.Y.Z`로 Release를 만들어 `MemoCalendar-Setup.exe`를 첨부합니다.
+새 버전 배포: `coolmemo_app/version.py`의 버전을 올리고 `packaging\build.ps1`로 빌드한 뒤, 태그 `vX.Y.Z`로 Release를 만들어 `MemoCalendar-Setup.exe`를 첨부합니다.
 
 ## 저장 위치
 
