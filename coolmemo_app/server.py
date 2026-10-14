@@ -220,7 +220,7 @@ class Handler(BaseHTTPRequestHandler):
             return
         mime = mimetypes.guess_type(target.name)[0] or "application/octet-stream"
         if target.name == "index.html":
-            page = target.read_text(encoding="utf-8").replace('data-theme="warm"', f'data-theme="{get_theme()}"', 1)
+            page = target.read_text(encoding="utf-8").replace('data-theme="coral"', f'data-theme="{get_theme()}"', 1)
             self._send(HTTPStatus.OK, page.encode("utf-8"), "text/html; charset=utf-8")
             return
         self._send(HTTPStatus.OK, target.read_bytes(), f"{mime}; charset=utf-8" if mime.startswith("text/") or mime == "application/javascript" else mime)

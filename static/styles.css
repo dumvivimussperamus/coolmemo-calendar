@@ -1,30 +1,30 @@
-/* 색상 테마: html[data-theme] 값으로 전환합니다. 기본은 warm(밝은 버전). */
+/* 색상 테마: html[data-theme] 값으로 전환합니다. 기본은 coral(산호). */
 :root,
-:root[data-theme="warm"] {
+:root[data-theme="coral"] {
   --canvas: #fff6ef;
   --surface: #fffaf6;
   --surface-strong: #ffffff;
-  --text: #367060;
-  --muted: #55796d;
-  --line: #f1dfd2;
-  --chip: #f8e6da;
-  --soft: #fde8e3;
-  --primary: #367060;
-  --primary-dark: #285548;
+  --text: #3b3433;
+  --muted: #766b68;
+  --line: #eddcd4;
+  --chip: #f3e7e2;
+  --soft: #fbe3de;
+  --primary: #e96b5a;
+  --primary-dark: #cf503f;
   --on-primary: #ffffff;
   --accent: #e96b5a;
-  --accent-text: #c4503f;
+  --accent-text: #cf503f;
   --pink: #edb0a7;
   --blue: #a0b6d8;
   --gold: #ddbb6c;
   --lime: #a2c058;
-  --ok-text: #367060;
+  --ok-text: #4d6b1f;
   --ok-soft: #e9f1d4;
-  --danger: #c4503f;
+  --danger: #b8402f;
   --on-danger: #ffffff;
   --focus: rgba(233, 107, 90, .28);
-  --shadow: 0 10px 30px rgba(54, 112, 96, .10);
-  --toast-bg: #367060;
+  --shadow: 0 10px 30px rgba(120, 70, 60, .10);
+  --toast-bg: #4a3f3d;
   --scheme: light;
 }
 
@@ -85,30 +85,30 @@
 }
 
 :root[data-theme="dark"] {
-  --canvas: #16201d;
-  --surface: #1d2a26;
-  --surface-strong: #243530;
-  --text: #f4e9df;
-  --muted: #aac0b7;
-  --line: #34483f;
-  --chip: #2d4039;
-  --soft: #34493f;
-  --primary: #a2c058;
-  --primary-dark: #b7d46c;
-  --on-primary: #1a2810;
-  --accent: #e96b5a;
-  --accent-text: #f2a094;
-  --pink: #edb0a7;
-  --blue: #a0b6d8;
-  --gold: #ddbb6c;
-  --lime: #a2c058;
-  --ok-text: #c2dc83;
-  --ok-soft: #31452d;
-  --danger: #f08a7c;
+  --canvas: #121212;
+  --surface: #1a1a1a;
+  --surface-strong: #212121;
+  --text: #ececec;
+  --muted: #a3a3a3;
+  --line: #343434;
+  --chip: #2b2b2b;
+  --soft: #333333;
+  --primary: #dcdcdc;
+  --primary-dark: #ffffff;
+  --on-primary: #141414;
+  --accent: #bdbdbd;
+  --accent-text: #c9c9c9;
+  --pink: #bdbdbd;
+  --blue: #9a9a9a;
+  --gold: #b0b0b0;
+  --lime: #bdbdbd;
+  --ok-text: #d0d0d0;
+  --ok-soft: #2c2c2c;
+  --danger: #ef9a90;
   --on-danger: #2b1511;
-  --focus: rgba(162, 192, 88, .35);
-  --shadow: 0 10px 30px rgba(0, 0, 0, .35);
-  --toast-bg: #3a5248;
+  --focus: rgba(255, 255, 255, .28);
+  --shadow: 0 10px 30px rgba(0, 0, 0, .45);
+  --toast-bg: #3a3a3a;
   --scheme: dark;
 }
 
@@ -287,7 +287,8 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary)
 .empty-state p { margin: 0; line-height: 1.6; }
 .empty-state .icon-text-button { margin-top: 18px; }
 .empty-calendar { display: grid; place-items: center; width: 68px; height: 62px; border-radius: 8px; color: var(--on-primary); background: var(--accent); font-size: 22px; font-weight: 850; box-shadow: var(--shadow); }
-:root[data-theme="forest"] .empty-calendar, :root[data-theme="dark"] .empty-calendar { color: #1d2b10; }
+:root[data-theme="forest"] .empty-calendar { color: #1d2b10; }
+:root[data-theme="dark"] .empty-calendar { color: #141414; }
 
 dialog { width: min(640px, calc(100vw - 32px)); max-height: min(860px, calc(100vh - 32px)); padding: 0; color: var(--text); background: var(--surface-strong); border: 0; border-radius: 8px; box-shadow: 0 24px 80px rgba(0,0,0,.28); }
 dialog::backdrop { background: rgba(20,30,26,.5); backdrop-filter: blur(3px); }
@@ -354,15 +355,13 @@ dialog::backdrop { background: rgba(20,30,26,.5); backdrop-filter: blur(3px); }
 
 .theme-option .theme-swatch { background: var(--sw-bg); }
 .theme-option .theme-swatch i { background: var(--sw-main); }
-.theme-option .dots b:nth-child(1) { background: #367060; }
-.theme-option .dots b:nth-child(2) { background: #edb0a7; }
-.theme-option .dots b:nth-child(3) { background: #e96b5a; }
-.theme-option .dots b:nth-child(4) { background: #a0b6d8; }
-.theme-option .dots b:nth-child(5) { background: #ddbb6c; }
-.theme-option[data-theme-id="warm"] { --sw-bg: #fff6ef; --sw-main: #367060; }
-.theme-option[data-theme-id="forest"] { --sw-bg: #f1f5e6; --sw-main: #a2c058; }
-.theme-option[data-theme-id="sky"] { --sw-bg: #eef3fa; --sw-main: #4a6a9c; }
-.theme-option[data-theme-id="dark"] { --sw-bg: #16201d; --sw-main: #a2c058; }
+.theme-option .dots b:nth-child(1) { background: var(--d1); }
+.theme-option .dots b:nth-child(2) { background: var(--d2); }
+.theme-option .dots b:nth-child(3) { background: var(--d3); }
+.theme-option[data-theme-id="coral"] { --sw-bg: #fff6ef; --sw-main: #e96b5a; --d1: #e96b5a; --d2: #edb0a7; --d3: #f3e7e2; }
+.theme-option[data-theme-id="forest"] { --sw-bg: #f1f5e6; --sw-main: #367060; --d1: #367060; --d2: #a2c058; --d3: #e5edd2; }
+.theme-option[data-theme-id="sky"] { --sw-bg: #eef3fa; --sw-main: #4a6a9c; --d1: #4a6a9c; --d2: #a0b6d8; --d3: #e2e9f5; }
+.theme-option[data-theme-id="dark"] { --sw-bg: #121212; --sw-main: #dcdcdc; --d1: #dcdcdc; --d2: #8a8a8a; --d3: #333333; }
 .settings-section > .privacy-note { margin: 0; text-align: left; font-size: 12px; }
 
 .calendar-picker { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 750; }

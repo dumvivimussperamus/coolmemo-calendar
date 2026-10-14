@@ -26,8 +26,9 @@ PORT = BASE_PORT
 BASE_URL = f"http://{HOST}:{PORT}"
 TIME_ZONE = "Asia/Seoul"
 
-THEMES = ("warm", "forest", "sky", "dark")
-DEFAULT_THEME = "warm"
+THEMES = ("coral", "forest", "sky", "dark")
+DEFAULT_THEME = "coral"
+LEGACY_THEMES = {"warm": "coral"}
 
 
 def set_port(port):
@@ -57,6 +58,7 @@ def save_settings(value):
 
 def get_theme():
     theme = load_settings().get("theme", DEFAULT_THEME)
+    theme = LEGACY_THEMES.get(theme, theme)
     return theme if theme in THEMES else DEFAULT_THEME
 
 
