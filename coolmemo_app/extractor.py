@@ -118,6 +118,7 @@ def _find_value(regex, context):
 
 def extract_candidates(message):
     reference = parse_message_date(message.message_date)
+    full_text = compact("\n".join(part for part in (message.title, message.body) if part))[:30000]
     body = strip_quoted_history(message.body)
     text = compact("\n".join(part for part in (message.title, body) if part))
     if not any(keyword in text for keyword in KEYWORDS):
@@ -168,6 +169,7 @@ def extract_candidates(message):
                 "location": _find_value(PLACE_RE, context),
                 "assignee": _find_value(ASSIGNEE_RE, context) or compact(message.person),
                 "context": compact(context)[:500],
+                "full_text": full_text,
             }
         )
     return candidates

@@ -1,10 +1,15 @@
 ﻿; 메모 일정함 설치파일 (Inno Setup 6)
 #define AppName "메모 일정함"
-#define AppVersion "1.0.0"
+#ifndef AppVersion
+  #define AppVersion "0.0.0"
+#endif
+#ifndef AppIdGuid
+  #define AppIdGuid "{{6B0E8D52-4B7C-4C0E-9F3A-C0010E5A2025}"
+#endif
 #define AppExe "MemoCalendar.exe"
 
 [Setup]
-AppId={{6B0E8D52-4B7C-4C0E-9F3A-C0010E5A2025}
+AppId={#AppIdGuid}
 AppName={#AppName}
 AppVersion={#AppVersion}
 AppPublisher=CoolMemo Calendar

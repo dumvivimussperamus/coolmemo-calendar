@@ -13,7 +13,7 @@ from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-from . import config
+from . import config, updater
 from .config import (
     BASE_PORT,
     CLIENT_SECRET_FILE,
@@ -159,6 +159,7 @@ class Handler(BaseHTTPRequestHandler):
                     "sourcePath": str(source_db) if source_db else "",
                     "sourceCandidates": [str(path) for path in discover_source_dbs()[:10]],
                     "theme": get_theme(),
+                    "version": updater.current_version(),
                     "sourceUpdated": latest,
                     "googleConfigured": CLIENT_SECRET_FILE.exists(),
                     "googleConnected": TOKEN_FILE.exists(),
@@ -177,6 +178,10 @@ class Handler(BaseHTTPRequestHandler):
             except Exception as error:
                 logging.exception("candidate extraction failed")
                 self._json(HTTPStatus.INTERNAL_SERVER_ERROR, {"error": str(error)})
+            return
+        if parsed.path == "/api/update":
+            query = urllib.parse.parse_qs(parsed.query)
+            self._json(HTTPStatus.OK, updater.check(force=query.get("force", ["0"])[0] == "1"))
             return
         if parsed.path == "/api/google/calendars":
             if not self._require_token():
@@ -247,6 +252,11 @@ class Handler(BaseHTTPRequestHandler):
                 return
             if parsed.path == "/api/google/calendar":
                 self._json(HTTPStatus.OK, {"calendarId": set_calendar_id(data.get("calendar_id"))})
+                return
+            if parsed.path == "/api/update/install":
+                result = updater.install()
+                self._json(HTTPStatus.OK, result)
+                threading.Timer(1.0, self.server.shutdown).start()
                 return
             if parsed.path == "/api/quit":
                 self._json(HTTPStatus.OK, {"ok": True})
@@ -355,6 +365,7 @@ def run(argv=None):
             open_browser(existing)
         return
     threading.Thread(target=discover_source_dbs, daemon=True).start()
+    threading.Thread(target=updater.check, daemon=True).start()
     if not background:
         threading.Timer(0.7, open_browser).start()
     logging.info("CoolMemo Calendar started at %s", config.BASE_URL)

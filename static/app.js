@@ -6,6 +6,7 @@ const state = {
   edits: new Map(),
   activeId: null,
   activeSource: "tbl_recv",
+  expanded: new Set(),
 };
 
 const $ = (id) => document.getElementById(id);
@@ -154,6 +155,9 @@ function render() {
         <span>${entryEdit.all_day ? "종일" : escapeHtml(entryEdit.time || "시간 미정")}</span>
       </button>`;
     }).join("");
+    const expanded = state.expanded.has(group.key);
+    const fullText = item.full_text || item.context;
+    const canExpand = fullText.length > item.context.length;
     const row = document.createElement("article");
     row.className = `candidate-row${selectedItems.length ? " is-selected" : ""}${group.items.every((entry) => entry.synced) ? " is-synced" : ""}`;
     row.dataset.group = group.key;
@@ -162,9 +166,13 @@ function render() {
       <input class="row-check" type="checkbox" aria-label="${escapeHtml(edit.title)}의 모든 일정 선택" ${selectedItems.length === group.items.length ? "checked" : ""}>
       <div class="message-date-cell"><strong>${escapeHtml(messageDate.value)}</strong><span>${escapeHtml(messageDate.label)}</span></div>
       <div class="schedule-cell">${scheduleOptions}</div>
-      <div class="title-cell"><strong>${escapeHtml(edit.title)}</strong>${item.synced ? '<span class="row-badge">등록 완료</span>' : ""}<p>${escapeHtml(item.context)}</p>${edit.location ? `<span class="location-meta">장소 ${escapeHtml(edit.location)}</span>` : ""}</div>
+      <div class="title-cell"><strong>${escapeHtml(edit.title)}</strong>${item.synced ? '<span class="row-badge">등록 완료</span>' : ""}<p class="${expanded ? "is-full" : ""}">${escapeHtml(expanded ? fullText : item.context)}</p>${canExpand ? `<button class="expand-toggle" type="button" aria-expanded="${expanded}">${expanded ? "접기" : "전체 내용 보기"}</button>` : ""}${edit.location ? `<span class="location-meta">장소 ${escapeHtml(edit.location)}</span>` : ""}</div>
       <div class="person-cell">${escapeHtml(item.person || "")}</div>
       `;
+    row.querySelector(".expand-toggle")?.addEventListener("click", () => {
+      state.expanded.has(group.key) ? state.expanded.delete(group.key) : state.expanded.add(group.key);
+      render();
+    });
     const groupCheck = row.querySelector(".row-check");
     groupCheck.indeterminate = selectedItems.length > 0 && selectedItems.length < group.items.length;
     groupCheck.addEventListener("change", (event) => {
@@ -229,7 +237,7 @@ function renderReview() {
   refs.editAssignee.value = edit.assignee;
   refs.editReminder.value = String(edit.reminder_minutes);
   refs.editMessageDate.textContent = formatMessageDate(item);
-  refs.editContext.textContent = item.context;
+  refs.editContext.textContent = item.full_text || item.context;
 }
 
 function selectedEvents() {
@@ -262,6 +270,7 @@ async function loadBootstrap() {
   refs.sourceChoiceHint.textContent = `자동 검색 ${data.sourceCandidates?.length || 0}개`;
   refs.sourceStatus.classList.toggle("is-warn", !data.sourceExists);
   applyTheme(data.theme);
+  $("appVersion").textContent = `v${data.version}`;
   refs.googleStatus.textContent = data.googleConnected ? "연결됨" : "미연결";
   refs.connectionBadge.textContent = data.googleConnected ? "Google 연결됨" : "Google 미연결";
   refs.connectionBadge.className = `badge ${data.googleConnected ? "connected" : "neutral"}`;
@@ -288,6 +297,50 @@ async function loadCalendars() {
     picker.classList.remove("hidden");
   } catch (error) {
     showToast(error.message, 6000);
+  }
+}
+
+async function checkUpdate(manual = false) {
+  try {
+    const info = await api(`/api/update?force=${manual ? 1 : 0}`);
+    state.update = info;
+    const banner = $("updateBanner");
+    const dismissed = state.updateDismissed === info.latest;
+    if (info.available && (manual || !dismissed)) {
+      $("updateText").textContent = `새 버전 v${info.latest}이 있습니다. (현재 v${info.current})`;
+      $("updateInstallButton").textContent = info.canAutoInstall ? "업데이트" : "다운로드 페이지 열기";
+      banner.classList.remove("hidden");
+    } else {
+      banner.classList.add("hidden");
+    }
+    if (manual) {
+      showToast(info.available ? `새 버전 v${info.latest}이 있습니다.` : info.error || "최신 버전입니다.", 4000);
+    }
+  } catch (error) {
+    if (manual) showToast(error.message, 5000);
+  }
+}
+
+async function installUpdate() {
+  const info = state.update;
+  if (!info?.available) return;
+  if (!info.canAutoInstall) {
+    window.open(info.pageUrl, "_blank", "noopener");
+    return;
+  }
+  if (!confirm(`v${info.latest}로 업데이트할까요?\n설치하는 동안 프로그램이 잠시 종료되었다가 다시 열립니다.\n설정과 Google 연결은 그대로 유지됩니다.`)) return;
+  const button = $("updateInstallButton");
+  button.disabled = true;
+  button.textContent = "내려받는 중...";
+  try {
+    await api("/api/update/install", {method: "POST", body: {}});
+    $("updateText").textContent = "설치 중입니다. 잠시 후 프로그램이 다시 열립니다. 이 탭은 닫아도 됩니다.";
+    $("updateInstallButton").classList.add("hidden");
+    $("updateLaterButton").classList.add("hidden");
+  } catch (error) {
+    button.disabled = false;
+    button.textContent = "업데이트";
+    showToast(error.message, 8000);
   }
 }
 
@@ -406,6 +459,12 @@ document.querySelectorAll(".theme-option").forEach((button) => {
     }
   });
 });
+$("updateInstallButton").addEventListener("click", installUpdate);
+$("updateLaterButton").addEventListener("click", () => {
+  state.updateDismissed = state.update?.latest;
+  $("updateBanner").classList.add("hidden");
+});
+$("checkUpdateButton").addEventListener("click", () => checkUpdate(true));
 $("quitButton").addEventListener("click", async () => {
   if (!confirm("메모 일정함을 완전히 종료할까요?\n종료 후에는 바로가기로 다시 실행할 수 있습니다.")) return;
   try { await api("/api/quit", {method:"POST", body:{}}); } catch (_) { /* 서버가 먼저 닫혀도 정상입니다. */ }
@@ -495,6 +554,7 @@ $("disconnectButton").addEventListener("click", async () => {
 (async function init() {
   try {
     await loadBootstrap();
+    checkUpdate(false);
     await loadCandidates(false);
   } catch (error) {
     showToast(error.message, 8000);

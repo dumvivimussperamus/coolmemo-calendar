@@ -39,7 +39,8 @@ $iscc = @(
     "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe"
 ) | Where-Object { Test-Path $_ } | Select-Object -First 1
 if ($iscc) {
-    & $iscc (Join-Path $PSScriptRoot 'installer.iss')
+    $version = (& $python -c "import sys; sys.path.insert(0, r'$root'); from coolmemo_app.version import __version__; print(__version__)").Trim()
+    & $iscc "/DAppVersion=$version" (Join-Path $PSScriptRoot 'installer.iss')
     if ($LASTEXITCODE -ne 0) { throw '설치파일 빌드 실패' }
 } else {
     Write-Warning 'Inno Setup 6가 없어 설치파일(.exe)은 만들지 않았습니다. (winget install JRSoftware.InnoSetup)'

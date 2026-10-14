@@ -19,6 +19,14 @@
     </div>
   </header>
 
+  <div id="updateBanner" class="update-banner hidden" role="status">
+    <span id="updateText"></span>
+    <span class="update-actions">
+      <button id="updateInstallButton" class="icon-text-button primary" type="button">업데이트</button>
+      <button id="updateLaterButton" class="icon-text-button secondary" type="button">나중에</button>
+    </span>
+  </div>
+
   <main>
     <section class="toolbar-band" aria-label="일정 후보 도구">
       <div class="toolbar-group">
@@ -254,7 +262,7 @@
       <section class="settings-section">
         <div class="settings-section-heading"><h3>프로그램</h3><span id="appVersion"></span></div>
         <p class="privacy-note">백그라운드로 실행 중인 프로그램을 완전히 끄려면 종료를 누르세요.</p>
-        <div class="settings-actions"><button id="quitButton" class="icon-text-button secondary" type="button">프로그램 종료</button></div>
+        <div class="settings-actions"><button id="checkUpdateButton" class="icon-text-button secondary" type="button">업데이트 확인</button> <button id="quitButton" class="icon-text-button secondary" type="button">프로그램 종료</button></div>
       </section>
     </form>
   </dialog>
